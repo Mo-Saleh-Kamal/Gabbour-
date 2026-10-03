@@ -1,0 +1,2015 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مدرسة غبور للتكنولوجيا التطبيقية</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <!-- React + Framer Motion من CDN -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/@babel/standalone/babel.min.js"
+    ></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+
+    <style>
+      /* ============ BASE ============ */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Cairo", sans-serif;
+        direction: rtl;
+        background: #fff;
+        color: #0f1419;
+        line-height: 1.7;
+        overflow-x: hidden;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+      button {
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+        background: none;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: "Tajawal", sans-serif;
+        color: #0a2540;
+        font-weight: 800;
+        line-height: 1.2;
+      }
+
+      .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      /* ============ LOADER ============ */
+      .loader {
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(135deg, #0a2540, #1a3a5c);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        color: white;
+      }
+      .loader-content {
+        text-align: center;
+      }
+      .loader-icon {
+        font-size: 5rem;
+        color: #ff6b35;
+        margin-bottom: 24px;
+        display: inline-block;
+      }
+      .loader h1 {
+        color: white;
+        font-size: 2.5rem;
+        letter-spacing: 6px;
+        margin-bottom: 32px;
+        font-weight: 900;
+      }
+      .progress-bar {
+        width: 320px;
+        height: 4px;
+        background: rgba(255, 107, 53, 0.2);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 0 auto 16px;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff6b35, #ff8a50);
+        border-radius: 10px;
+        transition: width 0.3s;
+      }
+      .progress-text {
+        font-size: 0.9rem;
+        letter-spacing: 3px;
+        color: #ff6b35;
+        font-weight: 700;
+      }
+
+      /* ============ CURSOR ============ */
+      .cursor-dot,
+      .cursor-follower {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 10000;
+        border-radius: 50%;
+        will-change: transform;
+      }
+      .cursor-dot {
+        width: 8px;
+        height: 8px;
+        background: #ff6b35;
+        margin: -4px 0 0 -4px;
+        transition:
+          width 0.3s,
+          height 0.3s,
+          background 0.3s;
+      }
+      .cursor-follower {
+        width: 40px;
+        height: 40px;
+        border: 2px solid #ff6b35;
+        margin: -20px 0 0 -20px;
+        transition:
+          width 0.3s,
+          height 0.3s,
+          margin 0.3s,
+          background 0.3s;
+      }
+      .cursor-dot.hover {
+        width: 12px;
+        height: 12px;
+        margin: -6px 0 0 -6px;
+      }
+      .cursor-follower.hover {
+        width: 70px;
+        height: 70px;
+        margin: -35px 0 0 -35px;
+        background: rgba(255, 107, 53, 0.15);
+        border-color: transparent;
+      }
+
+      /* ============ SCROLL PROGRESS ============ */
+      .scroll-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #ff6b35, #ff8a50);
+        transform-origin: 0%;
+        z-index: 9998;
+      }
+
+      /* ============ NAVBAR ============ */
+      .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        padding: 20px 0;
+        z-index: 1000;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .navbar.scrolled {
+        background: rgba(10, 37, 64, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 12px 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      }
+      .nav-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: white;
+        cursor: pointer;
+      }
+      .logo-icon {
+        width: 46px;
+        height: 46px;
+        background: linear-gradient(135deg, #ff6b35, #ff8a50);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        color: white;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .nav-logo:hover .logo-icon {
+        transform: rotate(15deg) scale(1.1);
+      }
+      .logo-text {
+        display: flex;
+        flex-direction: column;
+        text-align: right;
+      }
+      .logo-text span {
+        font-family: "Tajawal", sans-serif;
+        font-weight: 900;
+        font-size: 18px;
+      }
+      .logo-text small {
+        font-size: 11px;
+        opacity: 0.7;
+      }
+      .nav-links {
+        display: flex;
+        gap: 4px;
+        list-style: none;
+      }
+      .nav-link {
+        color: rgba(255, 255, 255, 0.85);
+        font-weight: 600;
+        font-size: 15px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        transition: all 0.3s;
+        position: relative;
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-family: "Cairo", sans-serif;
+      }
+      .nav-link:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .nav-link.active {
+        color: #ff6b35;
+      }
+      .active-line {
+        position: absolute;
+        bottom: 0;
+        right: 16px;
+        left: 16px;
+        height: 2px;
+        background: #ff6b35;
+        border-radius: 2px;
+      }
+      .menu-icon {
+        display: none;
+        color: white;
+        font-size: 24px;
+      }
+
+      /* ============ HERO ============ */
+      .hero {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0a2540 0%, #1a3a5c 100%);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        padding: 140px 24px 100px;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 107, 53, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 107, 53, 0.05) 1px, transparent 1px);
+        background-size: 60px 60px;
+        z-index: 1;
+      }
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 900px;
+        text-align: center;
+        color: white;
+      }
+      .hero-badge {
+        display: inline-block;
+        background: rgba(255, 107, 53, 0.15);
+        color: #ff6b35;
+        padding: 8px 20px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 24px;
+        border: 1px solid rgba(255, 107, 53, 0.3);
+      }
+      .hero h1 {
+        font-size: clamp(36px, 5.5vw, 68px);
+        color: white;
+        margin-bottom: 20px;
+        line-height: 1.15;
+        perspective: 1000px;
+      }
+      .hero h1 .highlight {
+        color: #ff6b35;
+        display: inline-block;
+      }
+      .hero h2 {
+        font-size: clamp(20px, 2.5vw, 32px);
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 24px;
+        font-weight: 700;
+      }
+      .hero p {
+        font-size: clamp(15px, 1.4vw, 18px);
+        color: rgba(255, 255, 255, 0.75);
+        max-width: 700px;
+        margin: 0 auto 40px;
+      }
+      .hero-buttons {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .scroll-indicator {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 26px;
+        height: 42px;
+        border: 2px solid #ff6b35;
+        border-radius: 20px;
+        z-index: 3;
+        display: flex;
+        justify-content: center;
+        padding-top: 8px;
+      }
+      .scroll-indicator span {
+        width: 4px;
+        height: 8px;
+        background: #ff6b35;
+        border-radius: 2px;
+      }
+
+      /* ============ BUTTONS ============ */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 16px 32px;
+        border-radius: 12px;
+        font-family: "Tajawal", sans-serif;
+        font-weight: 700;
+        font-size: 16px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #ff6b35, #ff8a50);
+        color: white;
+        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+      }
+      .btn-primary:hover {
+        box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+      }
+      .btn-outline {
+        background: transparent;
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+      }
+      .btn-outline:hover {
+        background: white;
+        color: #0a2540;
+      }
+
+      /* ============ SECTIONS ============ */
+      .section {
+        padding: 100px 0;
+      }
+      .section-gray {
+        background: #f5f7fa;
+      }
+      .section-header {
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto 60px;
+      }
+      .section-badge {
+        display: inline-block;
+        background: rgba(255, 107, 53, 0.1);
+        color: #ff6b35;
+        padding: 8px 20px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        letter-spacing: 1px;
+      }
+      .section-header h2 {
+        font-size: clamp(28px, 3.5vw, 42px);
+        margin-bottom: 16px;
+      }
+      .section-header p {
+        color: #64748b;
+        font-size: 17px;
+      }
+
+      /* ============ STATS ============ */
+      .stats-section {
+        padding: 0 24px;
+        margin-top: -80px;
+        position: relative;
+        z-index: 10;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        background: white;
+        border-radius: 24px;
+        padding: 48px 32px;
+        box-shadow: 0 20px 50px rgba(10, 37, 64, 0.15);
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .stat-box {
+        text-align: center;
+        padding: 20px 12px;
+        position: relative;
+      }
+      .stat-box:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        top: 20%;
+        left: 0;
+        height: 60%;
+        width: 1px;
+        background: linear-gradient(180deg, transparent, #e2e8f0, transparent);
+      }
+      .stat-number {
+        font-family: "Tajawal", sans-serif;
+        font-size: 48px;
+        font-weight: 900;
+        background: linear-gradient(135deg, #0a2540, #ff6b35);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+      .stat-label {
+        font-size: 15px;
+        color: #64748b;
+        font-weight: 500;
+      }
+
+      /* ============ CARDS (3D animation) ============ */
+      .card-3d {
+        transform-style: preserve-3d;
+        perspective: 1000px;
+      }
+      .spec-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(10, 37, 64, 0.08);
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        height: 100%;
+      }
+      .spec-card:hover {
+        box-shadow: 0 30px 60px rgba(10, 37, 64, 0.2);
+      }
+      .spec-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #ff6b35, #ff8a50);
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.5s;
+        z-index: 3;
+      }
+      .spec-card:hover::before {
+        transform: scaleX(1);
+      }
+      .spec-icon {
+        height: 160px;
+        background: linear-gradient(135deg, #0a2540 0%, #1a3a5c 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 68px;
+        color: #ff6b35;
+        transition: all 0.5s;
+      }
+      .spec-card:hover .spec-icon {
+        background: linear-gradient(135deg, #ff6b35, #ff8a50);
+        color: white;
+      }
+      .spec-content {
+        padding: 28px;
+      }
+      .spec-content h3 {
+        font-size: 22px;
+        margin-bottom: 12px;
+      }
+      .spec-content p {
+        color: #64748b;
+        font-size: 15px;
+        margin-bottom: 20px;
+      }
+      .spec-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .spec-tag {
+        background: rgba(10, 37, 64, 0.05);
+        color: #0a2540;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .spec-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 28px;
+      }
+
+      /* ============ MARQUEE ============ */
+      .marquee {
+        overflow: hidden;
+        background: linear-gradient(90deg, #ff6b35, #ff8a50);
+        padding: 20px 0;
+        transform: rotate(-2deg);
+        margin: 60px 0 -40px;
+        position: relative;
+        z-index: 5;
+      }
+      .marquee-track {
+        display: flex;
+        white-space: nowrap;
+        animation: marquee 30s linear infinite;
+      }
+      .marquee-track span {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: white;
+        padding: 0 30px;
+        letter-spacing: 2px;
+        font-family: "Tajawal", sans-serif;
+      }
+      @keyframes marquee {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-50%);
+        }
+      }
+
+      /* ============ WHY ============ */
+      .why-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+      }
+      .why-card {
+        background: #f5f7fa;
+        border-radius: 20px;
+        padding: 32px;
+        border-right: 4px solid #ff6b35;
+        transition: all 0.4s;
+      }
+      .why-card:hover {
+        background: white;
+        box-shadow: 0 20px 50px rgba(10, 37, 64, 0.15);
+      }
+      .why-icon {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, #ff6b35, #ff8a50);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: white;
+        margin-bottom: 20px;
+        transition: all 0.4s;
+      }
+      .why-card:hover .why-icon {
+        transform: rotate(-10deg) scale(1.1);
+      }
+      .why-card h3 {
+        font-size: 22px;
+        margin-bottom: 12px;
+      }
+      .why-card p {
+        color: #64748b;
+        font-size: 15px;
+      }
+
+      /* ============ PARTNERS ============ */
+      .partners-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 20px;
+      }
+      .partner-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 32px 20px;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .partner-card:hover {
+        border-color: #ff6b35;
+        transform: translateY(-6px);
+        box-shadow: 0 15px 35px rgba(255, 107, 53, 0.2);
+      }
+      .partner-logo {
+        font-size: 42px;
+        margin-bottom: 12px;
+      }
+      .partner-name {
+        color: #0a2540;
+        font-weight: 700;
+        font-size: 14px;
+        font-family: "Tajawal", sans-serif;
+      }
+
+      /* ============ TESTIMONIALS ============ */
+      .testimonials {
+        background: linear-gradient(135deg, #0a2540 0%, #1a3a5c 100%);
+        padding: 100px 0;
+        position: relative;
+        overflow: hidden;
+      }
+      .testimonials .section-header h2 {
+        color: white;
+      }
+      .testimonials::before {
+        content: '"';
+        position: absolute;
+        top: -100px;
+        left: 50px;
+        font-size: 500px;
+        font-family: Georgia, serif;
+        color: rgba(255, 107, 53, 0.05);
+        line-height: 1;
+      }
+      .testi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 24px;
+        position: relative;
+        z-index: 2;
+      }
+      .testi-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 32px;
+        transition: all 0.4s;
+      }
+      .testi-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-6px);
+      }
+      .testi-quote {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 16px;
+        line-height: 1.8;
+        font-style: italic;
+        margin-bottom: 24px;
+      }
+      .testi-author {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .testi-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ff6b35, #ff8a50);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 20px;
+        font-family: "Tajawal", sans-serif;
+      }
+      .testi-name {
+        color: white;
+        font-weight: 700;
+        font-family: "Tajawal", sans-serif;
+      }
+      .testi-role {
+        color: #ff6b35;
+        font-size: 13px;
+      }
+
+      /* ============ ABOUT ============ */
+      .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+      }
+      .about-image {
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(10, 37, 64, 0.15);
+        position: relative;
+      }
+      .about-image img {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+      }
+      .about-text h2 {
+        font-size: 38px;
+        margin-bottom: 20px;
+      }
+      .about-text p {
+        color: #64748b;
+        font-size: 16px;
+        line-height: 1.9;
+        margin-bottom: 20px;
+      }
+      .about-features {
+        list-style: none;
+        margin-top: 24px;
+      }
+      .about-features li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        color: #0f1419;
+        font-weight: 500;
+      }
+      .about-features li i {
+        color: #ff6b35;
+        font-size: 20px;
+      }
+
+      /* ============ CONTACT ============ */
+      .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+      }
+      .contact-card {
+        background: white;
+        border-radius: 20px;
+        padding: 32px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(10, 37, 64, 0.08);
+        transition: all 0.4s;
+      }
+      .contact-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(10, 37, 64, 0.15);
+      }
+      .contact-icon {
+        width: 72px;
+        height: 72px;
+        background: linear-gradient(135deg, #0a2540, #1a3a5c);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        color: #ff6b35;
+        margin: 0 auto 20px;
+        transition: all 0.5s;
+      }
+      .contact-card:hover .contact-icon {
+        background: linear-gradient(135deg, #ff6b35, #ff8a50);
+        color: white;
+        transform: rotate(-10deg) scale(1.1);
+      }
+      .contact-card h3 {
+        font-size: 20px;
+        margin-bottom: 12px;
+      }
+      .contact-card p {
+        color: #64748b;
+        font-size: 15px;
+      }
+      .contact-card strong {
+        color: #0a2540;
+        font-weight: 700;
+      }
+
+      /* ============ FOOTER ============ */
+      .footer {
+        background: #0f1419;
+        color: rgba(255, 255, 255, 0.7);
+        padding: 80px 0 30px;
+        position: relative;
+      }
+
+      html,
+      body {
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden;
+      }
+
+      #root {
+        width: 100%;
+        min-height: 100vh;
+      }
+      .footer::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #ff6b35, #1a3a5c, #ff6b35);
+      }
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1.5fr;
+        gap: 48px;
+        margin-bottom: 60px;
+      }
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .footer-col h3 {
+        color: white;
+        font-size: 18px;
+        margin-bottom: 24px;
+        position: relative;
+        padding-bottom: 12px;
+      }
+      .footer-col h3::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 40px;
+        height: 3px;
+        background: #ff6b35;
+        border-radius: 2px;
+      }
+      .footer-link {
+        color: rgba(255, 255, 255, 0.7);
+        display: block;
+        padding: 8px 0;
+        transition: all 0.3s;
+        font-size: 15px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        text-align: right;
+        font-family: inherit;
+      }
+      .footer-link:hover {
+        color: #ff6b35;
+        padding-right: 8px;
+      }
+      .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 24px;
+        text-align: center;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      /* ============ RESPONSIVE ============ */
+      @media (max-width: 900px) {
+        .nav-links {
+          display: none;
+        }
+        .menu-icon {
+          display: block;
+        }
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+          padding: 32px 20px;
+        }
+        .stat-box:nth-child(2)::after {
+          display: none;
+        }
+        .about-grid {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .about-image img {
+          height: 300px;
+        }
+        .footer-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 32px;
+        }
+        .section {
+          padding: 70px 0;
+        }
+        .stats-section {
+          margin-top: -60px;
+        }
+        .cursor-dot,
+        .cursor-follower {
+          display: none;
+        }
+        .marquee-track span {
+          font-size: 1.1rem;
+        }
+      }
+      @media (max-width: 560px) {
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+        .stat-box::after {
+          display: none !important;
+        }
+        .footer-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero-buttons {
+          flex-direction: column;
+          width: 100%;
+        }
+        .hero-buttons .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect, useRef } = React;
+      const {
+        motion,
+        AnimatePresence,
+        useScroll,
+        useSpring,
+        useTransform,
+        useInView,
+      } = window.Motion;
+
+      /* ============================================
+   🎬 LOADER
+   ============================================ */
+      function Loader({ onComplete }) {
+        const [progress, setProgress] = useState(0);
+
+        useEffect(() => {
+          const timer = setInterval(() => {
+            setProgress((p) => {
+              if (p >= 100) {
+                clearInterval(timer);
+                setTimeout(onComplete, 500);
+                return 100;
+              }
+              return p + Math.random() * 12;
+            });
+          }, 150);
+          return () => clearInterval(timer);
+        }, [onComplete]);
+
+        return (
+          <motion.div
+            className="loader"
+            exit={{ y: "-100%" }}
+            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+          >
+            <div className="loader-content">
+              <motion.div
+                className="loader-icon"
+                animate={{ rotate: [0, -15, 15, -15, 0], scale: [1, 1.1, 1] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
+                <i className="fa-solid fa-graduation-cap"></i>
+              </motion.div>
+              <h1>GHABBOUR</h1>
+              <div className="progress-bar">
+                <motion.div
+                  className="progress-fill"
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.3 }}
+                />
+              </div>
+              <span className="progress-text">{Math.round(progress)}%</span>
+            </div>
+          </motion.div>
+        );
+      }
+
+      /* ============================================
+   🖱️ CUSTOM CURSOR
+   ============================================ */
+      function Cursor() {
+        const cursorRef = useRef(null);
+        const followerRef = useRef(null);
+        const [hovered, setHovered] = useState(false);
+
+        useEffect(() => {
+          const cursor = cursorRef.current;
+          const follower = followerRef.current;
+          if (!cursor || !follower) return;
+
+          let mouseX = 0,
+            mouseY = 0,
+            followerX = 0,
+            followerY = 0;
+
+          const onMove = (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+          };
+
+          const animate = () => {
+            followerX += (mouseX - followerX) * 0.12;
+            followerY += (mouseY - followerY) * 0.12;
+            follower.style.transform = `translate(${followerX}px, ${followerY}px)`;
+            requestAnimationFrame(animate);
+          };
+          animate();
+
+          const onEnter = () => setHovered(true);
+          const onLeave = () => setHovered(false);
+
+          const els = document.querySelectorAll(
+            "a, button, .spec-card, .why-card, .partner-card",
+          );
+          els.forEach((el) => {
+            el.addEventListener("mouseenter", onEnter);
+            el.addEventListener("mouseleave", onLeave);
+          });
+
+          window.addEventListener("mousemove", onMove);
+          return () => {
+            window.removeEventListener("mousemove", onMove);
+            els.forEach((el) => {
+              el.removeEventListener("mouseenter", onEnter);
+              el.removeEventListener("mouseleave", onLeave);
+            });
+          };
+        }, []);
+
+        return (
+          <>
+            <div
+              ref={cursorRef}
+              className={`cursor-dot ${hovered ? "hover" : ""}`}
+            />
+            <div
+              ref={followerRef}
+              className={`cursor-follower ${hovered ? "hover" : ""}`}
+            />
+          </>
+        );
+      }
+
+      /* ============================================
+   📊 SCROLL PROGRESS
+   ============================================ */
+      function ScrollProgress() {
+        const { scrollYProgress } = useScroll();
+        const scaleX = useSpring(scrollYProgress, {
+          stiffness: 100,
+          damping: 30,
+          restDelta: 0.001,
+        });
+        return <motion.div className="scroll-progress" style={{ scaleX }} />;
+      }
+
+      /* ============================================
+   🧭 NAVBAR
+   ============================================ */
+      function Navbar({ currentPage, onNavigate }) {
+        const [scrolled, setScrolled] = useState(false);
+        const [open, setOpen] = useState(false);
+
+        useEffect(() => {
+          const onScroll = () => setScrolled(window.scrollY > 50);
+          window.addEventListener("scroll", onScroll);
+          return () => window.removeEventListener("scroll", onScroll);
+        }, []);
+
+        const navItems = [
+          { id: "home", label: "الرئيسية" },
+          { id: "about", label: "عن المدرسة" },
+          { id: "specializations", label: "التخصصات" },
+          { id: "why", label: "لماذا غبور" },
+          { id: "contact", label: "اتصل بنا" },
+        ];
+
+        const handleClick = (id) => {
+          setOpen(false);
+          onNavigate(id);
+        };
+
+        return (
+          <motion.nav
+            className={`navbar ${scrolled ? "scrolled" : ""}`}
+            initial={{ y: -100 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="nav-inner">
+              <button className="nav-logo" onClick={() => handleClick("home")}>
+                <div className="logo-icon">
+                  <i className="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div className="logo-text">
+                  <span>مدرسة غبور</span>
+                  <small>للتكنولوجيا التطبيقية</small>
+                </div>
+              </button>
+
+              <ul className="nav-links">
+                {navItems.map((item, i) => (
+                  <motion.li
+                    key={item.id}
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 + i * 0.1 }}
+                    style={{ listStyle: "none", position: "relative" }}
+                  >
+                    <button
+                      className={`nav-link ${currentPage === item.id ? "active" : ""}`}
+                      onClick={() => handleClick(item.id)}
+                    >
+                      {item.label}
+                      {currentPage === item.id && (
+                        <motion.div
+                          className="active-line"
+                          layoutId="activeLink"
+                          transition={{
+                            type: "spring",
+                            stiffness: 380,
+                            damping: 30,
+                          }}
+                        />
+                      )}
+                    </button>
+                  </motion.li>
+                ))}
+              </ul>
+
+              <button className="menu-icon" onClick={() => setOpen(!open)}>
+                <i className={`fa-solid ${open ? "fa-times" : "fa-bars"}`}></i>
+              </button>
+            </div>
+
+            <AnimatePresence>
+              {open && (
+                <motion.div
+                  className="mobile-menu"
+                  initial={{ x: "100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "100%" }}
+                  transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                  style={{
+                    position: "fixed",
+                    inset: 0,
+                    background: "#0A2540",
+                    zIndex: 999,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 24,
+                  }}
+                >
+                  {navItems.map((item, i) => (
+                    <motion.button
+                      key={item.id}
+                      initial={{ opacity: 0, x: 50 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 + i * 0.08 }}
+                      onClick={() => handleClick(item.id)}
+                      style={{
+                        color: "white",
+                        fontFamily: "Tajawal, sans-serif",
+                        fontWeight: 700,
+                        fontSize: 26,
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {item.label}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.nav>
+        );
+      }
+
+      /* ============================================
+   ✨ REVEAL (scroll animation)
+   ============================================ */
+      function Reveal({ children, variant = "up", delay = 0, duration = 0.7 }) {
+        const variants = {
+          up: { hidden: { opacity: 0, y: 60 }, visible: { opacity: 1, y: 0 } },
+          left: {
+            hidden: { opacity: 0, x: -80 },
+            visible: { opacity: 1, x: 0 },
+          },
+          right: {
+            hidden: { opacity: 0, x: 80 },
+            visible: { opacity: 1, x: 0 },
+          },
+          scale: {
+            hidden: { opacity: 0, scale: 0.7 },
+            visible: { opacity: 1, scale: 1 },
+          },
+        };
+
+        return (
+          <motion.div
+            variants={variants[variant]}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration, delay, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {children}
+          </motion.div>
+        );
+      }
+
+      /* ============================================
+   🔢 COUNTER
+   ============================================ */
+      function Counter({ from = 0, to, duration = 2, suffix = "" }) {
+        const ref = useRef(null);
+        const inView = useInView(ref, { once: true });
+        const [count, setCount] = useState(from);
+
+        useEffect(() => {
+          if (!inView) return;
+          let startTime;
+          const animate = (time) => {
+            if (!startTime) startTime = time;
+            const progress = Math.min(
+              (time - startTime) / (duration * 1000),
+              1,
+            );
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.floor(from + (to - from) * eased));
+            if (progress < 1) requestAnimationFrame(animate);
+          };
+          requestAnimationFrame(animate);
+        }, [inView, from, to, duration]);
+
+        return (
+          <span ref={ref}>
+            {count}
+            {suffix}
+          </span>
+        );
+      }
+
+      /* ============================================
+   🧲 MAGNETIC BUTTON
+   ============================================ */
+      function MagneticButton({ children, className, onClick, ...props }) {
+        const ref = useRef(null);
+        const [pos, setPos] = useState({ x: 0, y: 0 });
+
+        const onMove = (e) => {
+          if (!ref.current) return;
+          const { left, top, width, height } =
+            ref.current.getBoundingClientRect();
+          const x = e.clientX - (left + width / 2);
+          const y = e.clientY - (top + height / 2);
+          setPos({ x: x * 0.3, y: y * 0.3 });
+        };
+
+        const onLeave = () => setPos({ x: 0, y: 0 });
+
+        return (
+          <motion.button
+            ref={ref}
+            className={className}
+            onClick={onClick}
+            onMouseMove={onMove}
+            onMouseLeave={onLeave}
+            animate={{ x: pos.x, y: pos.y }}
+            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            {...props}
+          >
+            {children}
+          </motion.button>
+        );
+      }
+
+      /* ============================================
+   🎬 HERO
+   ============================================ */
+      function Hero({ onNavigate }) {
+        const ref = useRef(null);
+        const { scrollYProgress } = useScroll({
+          target: ref,
+          offset: ["start start", "end start"],
+        });
+
+        const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+        const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+        const scale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
+
+        const title = "مستقبلك يبدأ من هنا";
+        const words = title.split(" ");
+
+        const container = {
+          hidden: { opacity: 0 },
+          visible: { opacity: 1, transition: { staggerChildren: 0.12 } },
+        };
+
+        const child = {
+          hidden: { opacity: 0, y: 40, rotateX: -90 },
+          visible: {
+            opacity: 1,
+            y: 0,
+            rotateX: 0,
+            transition: { type: "spring", damping: 12, stiffness: 100 },
+          },
+        };
+
+        return (
+          <section className="hero" ref={ref} id="home">
+            <motion.div className="hero-content" style={{ y, opacity }}>
+              <motion.div
+                className="hero-badge"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <i className="fa-solid fa-graduation-cap"></i> مدارس التكنولوجيا
+                التطبيقية
+              </motion.div>
+
+              <motion.h1
+                variants={container}
+                initial="hidden"
+                animate="visible"
+              >
+                {words.map((word, i) => (
+                  <motion.span
+                    key={i}
+                    variants={child}
+                    className={
+                      word === "من" || word === "هنا" ? "highlight" : ""
+                    }
+                    style={{ display: "inline-block", marginLeft: "0.25rem" }}
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+              </motion.h1>
+
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1, duration: 0.8 }}
+              >
+                مدرسة غبور 1 للتكنولوجيا التطبيقية
+              </motion.h2>
+
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2, duration: 0.8 }}
+              >
+                تعليم تكنولوجي حديث يجمع بين المعرفة والتطبيق العملي؛ ويجهز
+                طلابنا بمهارات حقيقية للمستقبل وسوق العمل
+              </motion.p>
+
+              <motion.div
+                className="hero-buttons"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.5, duration: 0.8 }}
+              >
+                <MagneticButton
+                  className="btn btn-primary"
+                  onClick={() => onNavigate("about")}
+                >
+                  <i className="fa-solid fa-arrow-left"></i>
+                  <span>اكتشف المدرسة</span>
+                </MagneticButton>
+                <MagneticButton
+                  className="btn btn-outline"
+                  onClick={() => onNavigate("specializations")}
+                >
+                  <span>تعرف على التخصصات</span>
+                </MagneticButton>
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+              className="scroll-indicator"
+              animate={{ y: [0, 12, 0] }}
+              transition={{ repeat: Infinity, duration: 1.8 }}
+            >
+              <span></span>
+            </motion.div>
+          </section>
+        );
+      }
+
+      /* ============================================
+   📊 STATS SECTION
+   ============================================ */
+      function StatsSection() {
+        const stats = [
+          { to: 500, suffix: "+", label: "طالب وطالبة" },
+          { to: 6, suffix: "", label: "تخصصات تقنية" },
+          { to: 10, suffix: "+", label: "شركاء دوليين" },
+          { to: 95, suffix: "%", label: "نسبة التوظيف" },
+        ];
+
+        return (
+          <section className="stats-section">
+            <div className="stats-grid">
+              {stats.map((s, i) => (
+                <Reveal key={i} variant="up" delay={i * 0.15}>
+                  <div className="stat-box">
+                    <div className="stat-number">
+                      <Counter to={s.to} suffix={s.suffix} />
+                    </div>
+                    <div className="stat-label">{s.label}</div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </section>
+        );
+      }
+
+      /* ============================================
+   📜 MARQUEE
+   ============================================ */
+      function Marquee({ text }) {
+        return (
+          <div className="marquee">
+            <div className="marquee-track">
+              {[...Array(6)].map((_, i) => (
+                <span key={i}>{text} ● </span>
+              ))}
+            </div>
+          </div>
+        );
+      }
+
+      /* ============================================
+   📄 SECTION HEADER
+   ============================================ */
+      function SectionHeader({ badge, title, subtitle }) {
+        return (
+          <Reveal variant="up">
+            <div className="section-header">
+              <div className="section-badge">{badge}</div>
+              <h2>{title}</h2>
+              {subtitle && <p>{subtitle}</p>}
+            </div>
+          </Reveal>
+        );
+      }
+
+      /* ============================================
+   📚 SPECIALIZATION CARD
+   ============================================ */
+      function SpecCard({ item, index }) {
+        return (
+          <motion.div
+            className="spec-card card-3d"
+            initial={{ opacity: 0, y: 80, rotateX: -15 }}
+            whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{
+              duration: 0.7,
+              delay: index * 0.12,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            whileHover={{ y: -12, transition: { duration: 0.3 } }}
+          >
+            <div className="spec-icon">
+              <i className={item.icon}></i>
+            </div>
+            <div className="spec-content">
+              <h3>{item.title}</h3>
+              <p>{item.desc}</p>
+              <div className="spec-tags">
+                {item.tags.map((t, i) => (
+                  <span key={i} className="spec-tag">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        );
+      }
+
+      /* ============================================
+   📄 SECTIONS
+   ============================================ */
+      function AboutSection() {
+        return (
+          <section className="section" id="about">
+            <div className="container">
+              <div className="about-grid">
+                <Reveal variant="left">
+                  <div className="about-image">
+                    <img
+                      src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800"
+                      alt="About"
+                      onError={(e) => {
+                        e.target.src =
+                          "https://images.unsplash.com/photo-1562774053-701939374585?w=800";
+                      }}
+                    />
+                  </div>
+                </Reveal>
+                <div className="about-text">
+                  <Reveal variant="right">
+                    <div className="section-badge">من نحن</div>
+                    <h2>مدرسة حكومية بمعايير دولية</h2>
+                    <p>
+                      مدرسة غبور للتكنولوجيا التطبيقية هي مدرسة حكومية تم
+                      إنشاؤها بالتعاون مع مؤسسة غبور للتنمية والغرفة الألمانية
+                      العربية للصناعة والتجارة، لتقديم تعليم فني متطور يجمع بين
+                      الجانب النظري والتطبيق العملي.
+                    </p>
+                    <p>
+                      نؤمن بأن التعليم الحقيقي يبدأ من الورش والمعامل، لذلك نركز
+                      على التدريب العملي الفعلي بأحدث المعدات والتقنيات.
+                    </p>
+                  </Reveal>
+                  <Reveal variant="right" delay={0.3}>
+                    <ul className="about-features">
+                      <li>
+                        <i className="fa-solid fa-check-circle"></i> شهادات
+                        معتمدة دولياً
+                      </li>
+                      <li>
+                        <i className="fa-solid fa-check-circle"></i> تدريب عملي
+                        في مصانع الشركاء
+                      </li>
+                      <li>
+                        <i className="fa-solid fa-check-circle"></i> فرص عمل
+                        للخريجين
+                      </li>
+                      <li>
+                        <i className="fa-solid fa-check-circle"></i> بيئة
+                        تعليمية بدون دروس خصوصية
+                      </li>
+                    </ul>
+                  </Reveal>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function SpecializationsSection() {
+        const specs = [
+          {
+            icon: "fa-solid fa-car",
+            title: "ميكاترونيكس السيارات",
+            desc: "صيانة وإصلاح الأنظمة الإلكترونية والميكانيكية في السيارات الحديثة",
+            tags: ["إلكترونيات", "ميكانيكا", "برمجة"],
+          },
+          {
+            icon: "fa-solid fa-bolt",
+            title: "السيارات الكهربائية",
+            desc: "تقنيات السيارات الكهربائية والهجينة وأنظمة الشحن",
+            tags: ["بطاريات", "شواحن", "صيانة"],
+          },
+          {
+            icon: "fa-solid fa-tools",
+            title: "هياكل وطلاء السيارات",
+            desc: "إصلاح وصيانة الهياكل والسمكرة والدهان بأحدث التقنيات",
+            tags: ["سمكرة", "دهان", "تجميل"],
+          },
+          {
+            icon: "fa-solid fa-bus",
+            title: "سيارات النقل والحافلات",
+            desc: "صيانة وإصلاح المركبات الثقيلة وسيارات النقل",
+            tags: ["ديزل", "هيدروليك", "أنظمة"],
+          },
+          {
+            icon: "fa-solid fa-network-wired",
+            title: "صيانة شبكات الحاسب",
+            desc: "تركيب وصيانة الشبكات والدعم الفني بالتعاون مع CISCO",
+            tags: ["CISCO", "شبكات", "دعم فني"],
+          },
+          {
+            icon: "fa-solid fa-laptop-code",
+            title: "تطوير وصيانة البرمجيات",
+            desc: "تطوير التطبيقات وقواعد البيانات بالتعاون مع Oracle",
+            tags: ["Oracle", "برمجة", "DB"],
+          },
+        ];
+
+        return (
+          <section className="section section-gray" id="specializations">
+            <div className="container">
+              <SectionHeader
+                badge="التخصصات"
+                title="اختر مسارك التقني"
+                subtitle="تخصصات متطورة تجمع بين الدراسة النظرية والتدريب العملي"
+              />
+              <div className="spec-grid">
+                {specs.map((item, i) => (
+                  <SpecCard key={i} item={item} index={i} />
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function WhySection() {
+        const items = [
+          {
+            icon: "fa-solid fa-graduation-cap",
+            title: "شهادات دولية",
+            desc: "دبلوم مصري + شهادة معتمدة من الغرفة الألمانية العربية للصناعة والتجارة",
+          },
+          {
+            icon: "fa-solid fa-tools",
+            title: "تدريب عملي حقيقي",
+            desc: "تدريب في ورش المدرسة ومصانع الشركاء بأحدث المعدات والتقنيات",
+          },
+          {
+            icon: "fa-solid fa-briefcase",
+            title: "فرص عمل مضمونة",
+            desc: "مكتب توظيف خاص بمؤسسة غبور يربط الخريجين بسوق العمل مباشرة",
+          },
+          {
+            icon: "fa-solid fa-book-open",
+            title: "بدون دروس خصوصية",
+            desc: "مجموعات تقوية مجانية داخل المدرسة لجميع الطلاب",
+          },
+        ];
+
+        return (
+          <section className="section" id="why">
+            <div className="container">
+              <SectionHeader
+                badge="لماذا غبور؟"
+                title="مميزات تفرقنا عن غيرنا"
+                subtitle="4 أسباب تخليك تختار مدرسة غبور"
+              />
+              <div className="why-grid">
+                {items.map((item, i) => (
+                  <Reveal key={i} variant="up" delay={i * 0.15}>
+                    <div className="why-card">
+                      <div className="why-icon">
+                        <i className={item.icon}></i>
+                      </div>
+                      <h3>{item.title}</h3>
+                      <p>{item.desc}</p>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function TestimonialsSection() {
+        const items = [
+          {
+            quote:
+              "المدرسة ساعدتني أنجح في دراستي ومهنتي، والتدريب العملي خلاني جاهز لسوق العمل من أول يوم.",
+            name: "محمد أحمد",
+            role: "خريج 2021 - ميكاترونيكس",
+            initial: "م",
+          },
+          {
+            quote:
+              "أحسن حاجة في المدرسة هي الشهادات الدولية، بقيت مميز في سوق العمل عن غيري.",
+            name: "سارة محمود",
+            role: "خريجة 2022 - برمجيات",
+            initial: "س",
+          },
+          {
+            quote:
+              "المعلمين محترفين، والورش فيها أحدث المعدات. المدرسة دي غيرت حياتي.",
+            name: "أحمد عبد الله",
+            role: "طالب بالسنة الثالثة",
+            initial: "أ",
+          },
+        ];
+
+        return (
+          <section className="testimonials">
+            <div className="container">
+              <Reveal variant="up">
+                <div className="section-header">
+                  <div
+                    className="section-badge"
+                    style={{
+                      background: "rgba(255,107,53,0.2)",
+                      color: "#FF8A50",
+                    }}
+                  >
+                    آراء الطلاب
+                  </div>
+                  <h2 style={{ color: "white" }}>ماذا يقول طلابنا؟</h2>
+                </div>
+              </Reveal>
+              <div className="testi-grid">
+                {items.map((item, i) => (
+                  <Reveal key={i} variant="up" delay={i * 0.15}>
+                    <div className="testi-card">
+                      <p className="testi-quote">"{item.quote}"</p>
+                      <div className="testi-author">
+                        <div className="testi-avatar">{item.initial}</div>
+                        <div>
+                          <div className="testi-name">{item.name}</div>
+                          <div className="testi-role">{item.role}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function PartnersSection() {
+        const partners = [
+          { logo: "🇩🇪", name: "الغرفة الألمانية العربية" },
+          { logo: "🌐", name: "CISCO Academy" },
+          { logo: "🔶", name: "Oracle Academy" },
+          { logo: "🚌", name: "MCV" },
+          { logo: "🏫", name: "مدارس ساكسوني الألمانية" },
+          { logo: "🇩🇪", name: "AHK Egypt" },
+        ];
+
+        return (
+          <section className="section">
+            <div className="container">
+              <SectionHeader
+                badge="شركاؤنا"
+                title="نفتخر بشراكاتنا الدولية"
+                subtitle="شراكات مع كبرى الشركات والمؤسسات العالمية"
+              />
+              <div className="partners-grid">
+                {partners.map((p, i) => (
+                  <Reveal key={i} variant="scale" delay={i * 0.1}>
+                    <div className="partner-card">
+                      <div className="partner-logo">{p.logo}</div>
+                      <div className="partner-name">{p.name}</div>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function ContactSection() {
+        const items = [
+          { icon: "fa-solid fa-phone", title: "الخط الساخن", value: "16443" },
+          {
+            icon: "fa-brands fa-whatsapp",
+            title: "واتساب",
+            value: "01033330249",
+          },
+          {
+            icon: "fa-solid fa-envelope",
+            title: "البريد الإلكتروني",
+            value: "info@ghabbourfoundation.org",
+          },
+          {
+            icon: "fa-solid fa-map-marker-alt",
+            title: "العنوان",
+            value: "مجاورة 4، امتداد 15 مايو، القاهرة",
+          },
+        ];
+
+        return (
+          <section className="section section-gray" id="contact">
+            <div className="container">
+              <SectionHeader
+                badge="تواصل معنا"
+                title="نحن هنا للإجابة على استفساراتك"
+                subtitle="اختر الطريقة الأنسب للتواصل معنا"
+              />
+              <div className="contact-grid">
+                {items.map((c, i) => (
+                  <Reveal key={i} variant="up" delay={i * 0.12}>
+                    <div className="contact-card">
+                      <div className="contact-icon">
+                        <i className={c.icon}></i>
+                      </div>
+                      <h3>{c.title}</h3>
+                      <p>
+                        <strong>{c.value}</strong>
+                      </p>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function Footer({ onNavigate }) {
+        const navItems = [
+          { id: "home", label: "الرئيسية" },
+          { id: "about", label: "عن المدرسة" },
+          { id: "specializations", label: "التخصصات" },
+          { id: "contact", label: "اتصل بنا" },
+        ];
+
+        return (
+          <footer className="footer">
+            <div className="container">
+              <div className="footer-grid">
+                <div>
+                  <div className="footer-brand">
+                    <div className="logo-icon">
+                      <i className="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <span
+                      style={{
+                        color: "white",
+                        fontFamily: "Tajawal, sans-serif",
+                        fontWeight: 900,
+                        fontSize: 20,
+                      }}
+                    >
+                      مدرسة غبور
+                    </span>
+                  </div>
+                  <p style={{ fontSize: 14, lineHeight: 1.8 }}>
+                    مدرسة حكومية للتكنولوجيا التطبيقية بالتعاون مع مؤسسة غبور
+                    للتنمية والغرفة الألمانية العربية للصناعة والتجارة.
+                  </p>
+                </div>
+
+                <div className="footer-col">
+                  <h3>روابط سريعة</h3>
+                  {navItems.map((item) => (
+                    <button
+                      key={item.id}
+                      className="footer-link"
+                      onClick={() => onNavigate(item.id)}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="footer-col">
+                  <h3>تواصل معنا</h3>
+                  <div className="footer-link">📞 16443</div>
+                  <div className="footer-link">📱 01033330249</div>
+                </div>
+
+                <div className="footer-col">
+                  <h3>تابعنا</h3>
+                  <a className="footer-link" href="#">
+                    <i className="fa-brands fa-facebook"></i> فيسبوك
+                  </a>
+                  <a className="footer-link" href="#">
+                    <i className="fa-brands fa-instagram"></i> إنستجرام
+                  </a>
+                  <a className="footer-link" href="#">
+                    <i className="fa-brands fa-youtube"></i> يوتيوب
+                  </a>
+                </div>
+              </div>
+
+              <div className="footer-bottom">
+                © 2026 مدرسة غبور للتكنولوجيا التطبيقية. جميع الحقوق محفوظة.
+              </div>
+            </div>
+          </footer>
+        );
+      }
+
+      /* ============================================
+   🚀 APP
+   ============================================ */
+      function App() {
+        const [loading, setLoading] = useState(true);
+        const [page, setPage] = useState("home");
+
+        const navigate = (id) => {
+          setPage(id);
+          const element = document.getElementById(id);
+          if (element) {
+            const offset = 80;
+            const top =
+              element.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top, behavior: "smooth" });
+          }
+        };
+
+        // Track active section on scroll
+        useEffect(() => {
+          if (loading) return;
+          const sections = document.querySelectorAll("section[id]");
+          const onScroll = () => {
+            let current = "home";
+            sections.forEach((section) => {
+              const sectionTop = section.offsetTop - 150;
+              if (window.scrollY >= sectionTop) {
+                current = section.getAttribute("id");
+              }
+            });
+            setPage(current);
+          };
+          window.addEventListener("scroll", onScroll);
+          return () => window.removeEventListener("scroll", onScroll);
+        }, [loading]);
+
+        return (
+          <>
+            <AnimatePresence mode="wait">
+              {loading && <Loader onComplete={() => setLoading(false)} />}
+            </AnimatePresence>
+
+            {!loading && (
+              <>
+                <Cursor />
+                <ScrollProgress />
+                <Navbar currentPage={page} onNavigate={navigate} />
+
+                <main>
+                  <Hero onNavigate={navigate} />
+                  <StatsSection />
+                  <AboutSection />
+                  <Marquee text="مستقبلك يبدأ من هنا" />
+                  <SpecializationsSection />
+                  <WhySection />
+                  <TestimonialsSection />
+                  <PartnersSection />
+                  <ContactSection />
+                </main>
+
+                <Footer onNavigate={navigate} />
+              </>
+            )}
+          </>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>
